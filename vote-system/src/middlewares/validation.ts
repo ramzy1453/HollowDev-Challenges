@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
+import { BadRequestError, InternalServerError } from "../lib/errors";
 
 export function validation(schema: z.ZodObject<any, any>) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -8,12 +9,14 @@ export function validation(schema: z.ZodObject<any, any>) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((issue: any) => ({
+        const errorMessages = error.errors.map((issue) => ({
           message: `${issue.path.join(".")} is ${issue.message}`,
         }));
-        res.status(400).json({ error: "Invalid data", details: errorMessages });
+        throw new BadRequestError(JSON.stringify(errorMessages));
       } else {
-        res.status(500).json({ error: "Internal Server Error" });
+        throw new InternalServerError(
+          "An internal server error occurred while validating the request"
+        );
       }
     }
   };

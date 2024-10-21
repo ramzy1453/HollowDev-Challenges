@@ -8,11 +8,14 @@ type Position =
   | "ai-lead"
   | "cybersecurity-lead";
 
-export interface ICandidate {
+export interface ICandidature {
   id: string;
   user: IUser;
   skills: string[];
   motivation: string;
-  candidature: string;
-  candidateFor: Position[];
+  vision: string;
+  candidatureFor: Position;
 }
+
+export type CreateCandidatureBody = Omit<ICandidature, "id" | "user">;
+export type UpdateCandidatureBody = Partial<CreateCandidatureBody>;

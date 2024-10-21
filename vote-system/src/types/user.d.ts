@@ -1,4 +1,4 @@
-export interface IUser {
+export type IUser = {
   id: string;
   email: string;
   password: string;
@@ -7,6 +7,13 @@ export interface IUser {
   role: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export type UserCreateBody = Omit<IUser, "id" | "createdAt" | "updatedAt">;
+export type UserRegisterBody = Omit<IUser, "id" | "createdAt" | "updatedAt"> & {
+  confirmPassword: string;
+};
+export type UserUpdateBody = Partial<UserRegisterBody>;
+export type UserLoginBody = {
+  email: string;
+  password: string;
+};
