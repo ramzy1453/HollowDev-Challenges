@@ -12,5 +12,4 @@ const options = {
   apis: ["../src/routes*.js"],
 };
 
-const openApiSpecification = swaggerJsdoc(options);
-console.log({ openApiSpecification });
+export const openApiSpecification = swaggerJsdoc(options);

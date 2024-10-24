@@ -2,6 +2,7 @@ import "express-async-errors";
 import express, { Application } from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+import { openApiSpecification } from "./lib/swagger";
 import morgan from "morgan";
 import { connectDB, runServer } from "./config";
 import authRouter from "./routes/auth";
@@ -14,7 +15,7 @@ const app: Application = express();
 // Middlewares
 app.use(express.json());
 app.use(cors());
-app.use("/api-docs", swaggerUi.serve);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpecification));
 app.use(morgan("dev"));
 app.use("/api/v1/", express.static("public"));
 
