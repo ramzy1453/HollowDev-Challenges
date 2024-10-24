@@ -8,14 +8,16 @@ import { hashPassword, comparePassword, createToken } from "../lib/utils";
 const authControllers = {
   // POST
   async register(req: Request<{}, {}, UserRegisterBody>, res: Response) {
-    const { password, confirmPassword } = req.body;
-    if (password !== confirmPassword) {
-      throw new BadRequestError("Passwords do not match");
-    }
+    const body = { ...req.body, confirmPassword: undefined };
+
+    const { password } = body;
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await User.create({ ...req.body, password: hashedPassword });
+    const user = await User.create({
+      ...body,
+      password: hashedPassword,
+    });
 
     const accessToken = await createToken({ userId: user.id });
 

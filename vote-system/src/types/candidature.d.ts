@@ -15,7 +15,11 @@ export interface ICandidature {
   motivation: string;
   vision: string;
   candidatureFor: Position;
+  status: "pending" | "accepted" | "rejected";
 }
 
-export type CreateCandidatureBody = Omit<ICandidature, "id" | "user">;
+export type CreateCandidatureBody = Omit<
+  ICandidature,
+  "id" | "user" | "status"
+>;
 export type UpdateCandidatureBody = Partial<CreateCandidatureBody>;

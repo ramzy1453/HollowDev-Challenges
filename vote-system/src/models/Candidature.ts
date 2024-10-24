@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { ICandidature } from "../types/candidature";
+import { string } from "zod";
 
 const candidatureSchema = new mongoose.Schema<ICandidature>({
   user: {
@@ -18,6 +19,11 @@ const candidatureSchema = new mongoose.Schema<ICandidature>({
   vision: {
     type: String,
     required: true,
+  },
+  status: {
+    type: String,
+    default: "pending",
+    enum: ["pending", "accepted", "rejected"],
   },
   candidatureFor: {
     type: String,
