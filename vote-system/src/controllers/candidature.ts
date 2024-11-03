@@ -12,7 +12,6 @@ const candidatureControllers = {
     req: Request<{}, {}, CreateCandidatureBody>,
     res: Response
   ) {
-    console.log(req.body);
     const candidature = await Candidature.create({
       ...req.body,
       user: req.userId,
@@ -22,20 +21,28 @@ const candidatureControllers = {
       res,
       201,
       "Candidature created with success",
-      candidature
+      await candidature.populate("user")
     );
   },
   // GET /candidature/:id,
   async getCandidatureById(req: Request<{ id: string }>, res: Response) {
-    const candidatures = await Candidature.find({ user: req.userId }).populate(
-      "user"
-    );
+    const candidatures = await Candidature.find({
+      user: req.userId,
+      status: "accepted",
+    }).populate("user");
 
     return createResponse(res, 200, "Candidatures fetched", candidatures);
   },
   // GET /candidature/
   async getCandidatures(req: Request, res: Response) {
     const candidatures = await Candidature.find().populate("user");
+
+    return createResponse(res, 200, "Candidatures fetched", candidatures);
+  },
+  async getAcceptedCandidates(req: Request, res: Response) {
+    const candidatures = await Candidature.find({
+      status: "accepted",
+    }).populate("user");
 
     return createResponse(res, 200, "Candidatures fetched", candidatures);
   },

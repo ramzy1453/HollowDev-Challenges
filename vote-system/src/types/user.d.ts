@@ -17,3 +17,9 @@ export type UserLoginBody = {
   email: string;
   password: string;
 };
+
+export type UserUpdatePasswordBody = {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};

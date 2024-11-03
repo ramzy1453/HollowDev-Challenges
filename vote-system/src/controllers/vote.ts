@@ -8,9 +8,11 @@ const voteControllers = {
     const { userId } = req;
     const { candidateId } = req.params;
 
+    console.log({ userId, candidateId });
+
     const candidate = await Candidature.findById(candidateId);
 
-    if (candidate?.status === "rejected") {
+    if (candidate?.status !== "accepted") {
       return createResponse(res, 400, "This candidate is rejected");
     }
 
@@ -19,7 +21,12 @@ const voteControllers = {
       candidate: candidateId,
     });
 
-    return createResponse(res, 201, "Vote created", vote);
+    return createResponse(
+      res,
+      201,
+      "Vote created",
+      await vote.populate("candidate user")
+    );
   },
 
   async getVotesForCandidate(
@@ -29,9 +36,13 @@ const voteControllers = {
     const { candidateId } = req.params;
     const votes = await Vote.find({ candidate: candidateId }).countDocuments();
 
+    if (!votes) {
+      return createResponse(res, 404, "Votes not found");
+    }
+
     return createResponse(res, 200, "Votes fetched", votes);
   },
-  getStats : async (req: Request, res: Response) => {
+  getStats: async (req: Request, res: Response) => {
     const votes = await Vote.aggregate([
       {
         $group: {
@@ -42,7 +53,7 @@ const voteControllers = {
     ]);
 
     return createResponse(res, 200, "Stats fetched", votes);
-  }
+  },
 };
 
 export default voteControllers;

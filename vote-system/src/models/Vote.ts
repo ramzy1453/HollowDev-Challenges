@@ -6,7 +6,7 @@ const voteSchema = new mongoose.Schema<IVote>(
     candidate: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Candidate",
+      ref: "Candidature",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

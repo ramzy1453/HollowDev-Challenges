@@ -10,6 +10,8 @@ const router = Router();
 export default router;
 
 router.get("/", isAuth, isAdmin, userController.getUsers);
+router.get("/profile", isAuth, userController.getProfile);
+
 router.get(
   "/:id",
   isAuth,
@@ -18,9 +20,15 @@ router.get(
   validator,
   userController.getUserById
 );
-router.get("/profile", isAuth, userController.getProfile);
 
 router.put("/profile", isAuth, userController.updateProfile);
+router.put(
+  "/update-password",
+  isAuth,
+  UserValidator.updatePassword,
+  validator,
+  userController.updatePassword
+);
 router.delete(
   "/delete-account",
   isAuth,

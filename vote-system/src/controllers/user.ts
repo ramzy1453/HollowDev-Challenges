@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
-import { UserRegisterBody, UserUpdateBody } from "../types/user";
+import {
+  UserRegisterBody,
+  UserUpdateBody,
+  UserUpdatePasswordBody,
+} from "../types/user";
 import User from "../models/User";
 import { createResponse } from "../lib/response";
 import { NotFoundError } from "../lib/errors";
-import { comparePassword } from "../lib/utils";
+import { comparePassword, hashPassword } from "../lib/utils";
 
 const userController = {
   // GET
@@ -12,9 +16,9 @@ const userController = {
     return createResponse(res, 200, "Users retrieved with success", users);
   },
   // GET
-  async getProfile(req: Request<{ id: string }>, res: Response) {
-    const { id } = req.params;
-    const user = await User.findOne({ id: req.userId });
+  async getProfile(req: Request, res: Response) {
+    const user = await User.findById(req.userId);
+    console.log({ user });
 
     if (!user) {
       throw new NotFoundError("User not found");
@@ -25,7 +29,8 @@ const userController = {
   // GET
   async getUserById(req: Request<{ id: string }>, res: Response) {
     const { id } = req.params;
-    const user = await User.findOne({ id });
+
+    const user = await User.findById(id);
 
     if (!user) {
       throw new NotFoundError("User not found");
@@ -34,11 +39,9 @@ const userController = {
     return createResponse(res, 200, "User retrieved with success", user);
   },
   // PUT
-  async updateProfile(
-    req: Request<{ id: string }, {}, UserUpdateBody>,
-    res: Response
-  ) {
-    const user = await User.findOneAndUpdate({ id: req.userId }, req.body, {
+  async updateProfile(req: Request<{}, {}, UserUpdateBody>, res: Response) {
+    const { role, password, ...body } = req.body;
+    const user = await User.findByIdAndUpdate(req.userId, body, {
       new: true,
     });
 
@@ -47,6 +50,34 @@ const userController = {
     }
 
     return createResponse(res, 200, "User updated with success", user);
+  },
+  async updatePassword(
+    req: Request<{}, {}, UserUpdatePasswordBody>,
+    res: Response
+  ) {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const { userId } = req;
+    if (newPassword !== confirmPassword) {
+      throw new NotFoundError("Passwords do not match");
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const isValidPassword = await comparePassword(oldPassword, user.password);
+
+    if (!isValidPassword) {
+      throw new NotFoundError("Invalid password");
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+    return createResponse(res, 200, "Password updated with success");
   },
   // DELETE
   async deleteProfile(
@@ -67,7 +98,7 @@ const userController = {
       throw new NotFoundError("Invalid password");
     }
 
-    await User.deleteOne({ id: userId });
+    await User.findByIdAndDelete(userId);
 
     return createResponse(res, 200, "User deleted with success");
   },

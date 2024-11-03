@@ -7,16 +7,16 @@ import isAdmin from "../middlewares/isAdmin";
 
 const router = Router();
 
-router.put(
-  "/:id",
+router.post(
+  "/:candidateId",
   isAuth,
   VoteValidator.validId,
   validator,
   voteControllers.vote
 );
 
-router.put(
-  ":/id",
+router.get(
+  "/count/:candidateId",
   isAuth,
   isAdmin,
   VoteValidator.validId,

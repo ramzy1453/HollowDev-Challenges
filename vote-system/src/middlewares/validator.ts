@@ -15,7 +15,6 @@ export default function validator(
   next: NextFunction
 ) {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     throw new BadRequestError(
       "Validation Error: " +

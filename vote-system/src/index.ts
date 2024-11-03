@@ -7,6 +7,7 @@ import morgan from "morgan";
 import { connectDB, runServer } from "./config";
 import authRouter from "./routes/auth";
 import voteRouter from "./routes/vote";
+import userRouter from "./routes/user";
 import candidatureRouter from "./routes/candidature";
 import errorHandler from "./middlewares/errorHandler";
 
@@ -21,6 +22,7 @@ app.use("/api/v1/", express.static("public"));
 
 // Routes
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/candidature", candidatureRouter);
 app.use("/api/v1/vote", voteRouter);
 app.use(errorHandler);
