@@ -1,44 +1,49 @@
 <script lang="ts">
-	import tippy from 'tippy.js';
+	import { fade, fly, scale } from 'svelte/transition';
+	import { elasticOut } from 'svelte/easing';
+	import { flip } from 'svelte/animate';
 
-	let content = $state('Hello!');
+	function typewriter(node: HTMLElement, { speed }: { speed: number }) {
+		const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
 
-	function tooltip(node: HTMLElement) {
-		$effect(() => {
-			const tooltip = tippy(node);
+		if (!valid) {
+			throw new Error(`This transition only works on elements with a single text node child`);
+		}
 
-			return tooltip.destroy;
-		});
+		const text = node.textContent as string;
+		const duration = text.length / (speed * 0.01);
+
+		return {
+			duration,
+			tick: (t: number) => {
+				const i = Math.trunc(text.length * t);
+				console.log(i);
+				node.textContent = text.slice(0, i);
+			}
+		};
 	}
+
+	const texts = [
+		'The quick brown fox jumps over the lazy dog',
+		'Pack my box with five dozen liquor jugs',
+		'How razorback-jumping frogs can level six piqued gymnasts',
+		'Sphinx of black quartz, judge my vow',
+		'The five boxing wizards jump quickly'
+	];
+
+	let currentIdx = $state(0);
 </script>
 
-<input bind:value={content} />
+<button class="bg-red-400 p-2" onclick={() => (currentIdx = (currentIdx + 1) % texts.length)}
+	>Next</button
+>
 
-<button use:tooltip> Hover me </button>
+<!-- animte -->
 
-<style>
-	:global {
-		[data-tippy-root] {
-			--bg: #666;
-			background-color: var(--bg);
-			color: white;
-			border-radius: 0.2rem;
-			padding: 0.2rem 0.6rem;
-			filter: drop-shadow(1px 1px 3px rgb(0 0 0 / 0.1));
-
-			* {
-				transition: none;
-			}
-		}
-
-		[data-tippy-root]::before {
-			--size: 0.4rem;
-			content: '';
-			position: absolute;
-			left: calc(50% - var(--size));
-			top: calc(-2 * var(--size) + 1px);
-			border: var(--size) solid transparent;
-			border-bottom-color: var(--bg);
-		}
-	}
-</style>
+<ul>
+	{#each texts as item (item)}
+		<li animate:flip={{ duration: 300 }} class="item">
+			{item}
+		</li>
+	{/each}
+</ul>
