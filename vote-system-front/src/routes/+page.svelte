@@ -1,49 +1,42 @@
 <script lang="ts">
-	import { fade, fly, scale } from 'svelte/transition';
-	import { elasticOut } from 'svelte/easing';
-	import { flip } from 'svelte/animate';
-
-	function typewriter(node: HTMLElement, { speed }: { speed: number }) {
-		const valid = node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE;
-
-		if (!valid) {
-			throw new Error(`This transition only works on elements with a single text node child`);
-		}
-
-		const text = node.textContent as string;
-		const duration = text.length / (speed * 0.01);
-
-		return {
-			duration,
-			tick: (t: number) => {
-				const i = Math.trunc(text.length * t);
-				console.log(i);
-				node.textContent = text.slice(0, i);
-			}
-		};
-	}
-
-	const texts = [
-		'The quick brown fox jumps over the lazy dog',
-		'Pack my box with five dozen liquor jugs',
-		'How razorback-jumping frogs can level six piqued gymnasts',
-		'Sphinx of black quartz, judge my vow',
-		'The five boxing wizards jump quickly'
-	];
-
-	let currentIdx = $state(0);
 </script>
 
-<button class="bg-red-400 p-2" onclick={() => (currentIdx = (currentIdx + 1) % texts.length)}
-	>Next</button
->
+<table>
+	<thead>
+		<tr>
+			<th>emoji</th>
+			<th>description</th>
+			<th>unicode escape sequence</th>
+			<th>html entity</th>
+		</tr>
+	</thead>
 
-<!-- animte -->
+	<tbody>
+		{#snippet monkey(emoji: string, description: string)}
+			<tr>
+				<td>{emoji}</td>
+				<td>{description}</td>
+				<td>\u{emoji.charCodeAt(0).toString(16)}\u{emoji.charCodeAt(1).toString(16)}</td>
+				<td>&amp#{emoji.codePointAt(0)}</td>
+			</tr>
+		{/snippet}
+		{@render monkey('🙈', 'tadmir britania')}
+		{@render monkey('🙈', 'tadmir slovakia')}
+		{@render monkey('🙈', 'tadmir hungaria')}
+		{@render monkey('🙈', 'tadmir romania')}
+		{@render monkey('🙈', 'tadmir bulgaria')}
+		{@render monkey('🙈', 'tadmir yunani')}
+	</tbody>
+</table>
 
-<ul>
-	{#each texts as item (item)}
-		<li animate:flip={{ duration: 300 }} class="item">
-			{item}
-		</li>
-	{/each}
-</ul>
+<style>
+	th,
+	td {
+		padding: 0.5em;
+	}
+
+	td:nth-child(3),
+	td:nth-child(4) {
+		font-family: monospace;
+	}
+</style>
