@@ -24,5 +24,5 @@ router.get(
   voteControllers.getVotesForCandidate
 );
 
-router.get("/", isAuth, isAdmin, voteControllers.getStats);
+router.get("/stats", isAuth, isAdmin, voteControllers.getStats);
 export default router;

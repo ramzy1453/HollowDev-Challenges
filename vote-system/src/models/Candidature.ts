@@ -11,6 +11,7 @@ const candidatureSchema = new mongoose.Schema<ICandidature>({
   skills: {
     type: [String],
     required: true,
+    trim: true,
   },
   motivation: {
     type: String,
@@ -28,14 +29,7 @@ const candidatureSchema = new mongoose.Schema<ICandidature>({
   candidatureFor: {
     type: String,
     required: true,
-    enum: [
-      "team-leader",
-      "team-assistant",
-      "web-lead",
-      "mobile-lead",
-      "ai-lead",
-      "cybersecurity-lead",
-    ],
+    enum: ["P", "VP", "SG", "SGA"],
   },
 });
 

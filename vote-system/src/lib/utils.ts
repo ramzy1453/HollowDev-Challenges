@@ -14,7 +14,7 @@ export async function comparePassword(
 
 export async function createToken(data: { userId: string }): Promise<string> {
   return jwt.sign(data, process.env.JWT_SECRET as string, {
-    expiresIn: "1h",
+    expiresIn: "365d",
   });
 }
 

@@ -11,8 +11,13 @@ const voteSchema = new mongoose.Schema<IVote>(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      unique: false,
       ref: "User",
-      unique: true,
+    },
+    candidatureFor: {
+      type: String,
+      required: true,
+      enum: ["P", "VP", "SG", "SGA"],
     },
   },
   { timestamps: true }

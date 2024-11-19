@@ -7,14 +7,7 @@ export class CandidatureValidator {
     body("candidatureFor")
       .isString()
       .notEmpty()
-      .isIn([
-        "team-leader",
-        "team-assistant",
-        "web-lead",
-        "mobile-lead",
-        "ai-lead",
-        "cybersecurity-lead",
-      ])
+      .isIn(["P", "VP", "SG", "SGA"])
       .withMessage("Candidature for is invalid"),
     body("motivation")
       .isString()
