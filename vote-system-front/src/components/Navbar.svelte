@@ -14,15 +14,15 @@
 	<div class="flex items-center justify-center space-x-4">
 		<ul class="flex space-x-2">
 			{#if auth.user?.role === 'admin'}
-				<li class="border">
+				<li class="border px-2 py-1">
 					<a href="/admin">Admin</a>
 				</li>
 			{/if}
 			{#if auth.accessToken}
-				<li class="border">
+				<li class="border px-2 py-1">
 					<a href="/vote">Vote</a>
 				</li>
-				<li class="border">
+				<li class="border px-2 py-1">
 					<a href="/candidate">Candidate</a>
 				</li>
 			{/if}

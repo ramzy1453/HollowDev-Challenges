@@ -42,8 +42,11 @@ export async function candidate(
 	return response.json();
 }
 
-export async function getAcceptedCandidates(accessToken: string): IResponse<ICandidateResponse[]> {
-	const response = await fetch(`${BASE_URL}/candidature`, {
+export async function getAcceptedCandidates(
+	accessToken: string,
+	query?: string
+): IResponse<ICandidateResponse[]> {
+	const response = await fetch(`${BASE_URL}/candidature${query}`, {
 		headers: {
 			Authorization: `Bearer ${accessToken}`
 		}
@@ -51,8 +54,11 @@ export async function getAcceptedCandidates(accessToken: string): IResponse<ICan
 	return response.json();
 }
 
-export async function getCandidates(accessToken: string): IResponse<ICandidateResponse[]> {
-	const response = await fetch(`${BASE_URL}/candidature/all`, {
+export async function getCandidates(
+	accessToken: string,
+	query?: string
+): IResponse<ICandidateResponse[]> {
+	const response = await fetch(`${BASE_URL}/candidature/all${query}`, {
 		headers: {
 			Authorization: `Bearer ${accessToken}`
 		}

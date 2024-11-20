@@ -40,7 +40,7 @@
 		class="flex flex-1 flex-col justify-between bg-cover bg-no-repeat p-8"
 		style:background-image="url(https://images.unsplash.com/photo-1590069261209-f8e9b8642343?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1376&q=80)"
 	>
-		<p class="text-xl font-medium">Acme Inc</p>
+		<p class="text-xl font-medium">Hamas Inc</p>
 		<div class="space-y-2">
 			<p class="text-xl">
 				“This library has saved me countless hours of work and helped me deliver stunning designs to

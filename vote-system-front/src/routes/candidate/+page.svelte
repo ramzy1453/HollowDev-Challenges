@@ -34,8 +34,6 @@
 			motivation
 		};
 
-		console.log('Candidate data:', candidateData);
-
 		const { data, message, success } = await candidate(auth.accessToken, candidateData);
 
 		alert(message);
@@ -43,7 +41,6 @@
 </script>
 
 <Navbar />
-<a href="/vote">vote</a>
 <div class="py-8">
 	<form onsubmit={handleSubmit} class="mx-auto max-w-3xl space-y-6">
 		<div class="space-y-2">

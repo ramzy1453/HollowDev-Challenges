@@ -15,8 +15,21 @@ router.post(
   candidatureControllers.createCandidature
 );
 
-router.get("/", isAuth, candidatureControllers.getAcceptedCandidates);
-router.get("/all", isAuth, isAdmin, candidatureControllers.getCandidatures);
+router.get(
+  "/",
+  isAuth,
+  CandidatureValidator.get,
+  validator,
+  candidatureControllers.getAcceptedCandidates
+);
+router.get(
+  "/all",
+  isAuth,
+  isAdmin,
+  CandidatureValidator.get,
+  validator,
+  candidatureControllers.getCandidatures
+);
 router.get(
   "/:id",
   isAuth,

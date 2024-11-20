@@ -1,11 +1,10 @@
 <script>
-    import { auth } from '$lib/index.svelte';
-    let { children } = $props();
-
+	import { auth } from '$lib/index.svelte';
+	let { children } = $props();
 </script>
 
 {#if auth?.user}
-    {@render children()}
+	{@render children()}
 {:else}
-    <p>Not Access</p>
+	<p>Not Access</p>
 {/if}

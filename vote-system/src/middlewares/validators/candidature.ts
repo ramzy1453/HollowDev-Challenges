@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 
 export class CandidatureValidator {
   static create = [
@@ -15,4 +15,10 @@ export class CandidatureValidator {
       .withMessage("Motivation is invalid"),
   ];
   static validId = [param("id").isMongoId().withMessage("Invalid ID")];
+  static get = [
+    query("candidatureFor")
+      .isString()
+      .optional()
+      .withMessage("Invalid candidatureFor"),
+  ];
 }

@@ -11,7 +11,7 @@ const voteControllers = {
     const candidate = await Candidature.findById(candidateId);
 
     if (candidate?.status !== "accepted") {
-      return createResponse(res, 400, "This candidate is rejected ");
+      return createResponse(res, 400, "This candidate is rejected or pending");
     }
 
     // y a 4 position tu peux voter un par chque

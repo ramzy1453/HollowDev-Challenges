@@ -1,7 +1,7 @@
 import { Router } from "express";
 import isAuth from "../middlewares/isAuth";
 import voteControllers from "../controllers/vote";
-import { VoteValidator } from "../middlewares/validators/validator";
+import { VoteValidator } from "../middlewares/validators/vote";
 import validator from "../middlewares/validator";
 import isAdmin from "../middlewares/isAdmin";
 

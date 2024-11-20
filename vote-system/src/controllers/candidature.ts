@@ -5,6 +5,7 @@ import {
 } from "../types/candidature";
 import Candidature from "../models/Candidature";
 import { createResponse } from "../lib/response";
+import User from "../models/User";
 
 const candidatureControllers = {
   // POST /candidature
@@ -12,6 +13,13 @@ const candidatureControllers = {
     req: Request<{}, {}, CreateCandidatureBody>,
     res: Response
   ) {
+    // Admin can't candidate
+    const user = await User.findOne({ user: req.userId });
+
+    if (user?.role === "admin") {
+      return createResponse(res, 400, "Admin can't candidate");
+    }
+
     const candidature = await Candidature.create({
       ...req.body,
       user: req.userId,
@@ -34,14 +42,27 @@ const candidatureControllers = {
     return createResponse(res, 200, "Candidatures fetched", candidatures);
   },
   // GET /candidature/
-  async getCandidatures(req: Request, res: Response) {
-    const candidatures = await Candidature.find().populate("user");
+  async getCandidatures(
+    req: Request<{}, {}, {}, { candidatureFor: string }>,
+    res: Response
+  ) {
+    const positions = req.query?.candidatureFor?.split(",");
+
+    const candidatures = await Candidature.find(
+      positions ? { candidatureFor: { $in: positions } } : {}
+    ).populate("user");
 
     return createResponse(res, 200, "Candidatures fetched", candidatures);
   },
-  async getAcceptedCandidates(req: Request, res: Response) {
+  async getAcceptedCandidates(
+    req: Request<{}, {}, {}, { candidatureFor: string }>,
+    res: Response
+  ) {
+    const positions = req.query?.candidatureFor?.split(",");
+
     const candidatures = await Candidature.find({
       status: "accepted",
+      ...(positions ? { candidatureFor: { $in: positions } } : {}),
     }).populate("user");
 
     return createResponse(res, 200, "Candidatures fetched", candidatures);
