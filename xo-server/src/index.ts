@@ -32,8 +32,7 @@ function getQuery(socket: Socket, q: string) {
   return socket.handshake.query[q] as string;
 }
 const rooms = new Map();
-rooms.set("damar", { board: Array(9).fill(null), players: [] });
-
+let timeout: NodeJS.Timeout;
 io.on("connection", (socket) => {
   console.log("Connected user : ", socket.id);
 
@@ -49,9 +48,16 @@ io.on("connection", (socket) => {
     if (!roomData) {
       return socket.emit("join-error", { error: "Room not found" });
     }
-    if (roomData.players.length === 2) {
+    if (roomData.players.length === 2 && !roomData.players.includes(username)) {
       return socket.emit("join-error", { error: "Room is full" });
     }
+
+    // when u join an inactive room delete the timer and set it for true
+    if (!roomData.active) {
+      clearTimeout(timeout);
+      roomData.active = true;
+    }
+
     roomData.players.push(username);
     socket.join(room);
     socket.emit("join-success", { room, players: roomData.players });
@@ -65,7 +71,11 @@ io.on("connection", (socket) => {
     if (rooms.has(room)) {
       return socket.emit("create-error", { error: "Room already exist" });
     }
-    rooms.set(room, { board: Array(9).fill(null), players: [username] });
+    rooms.set(room, {
+      board: Array(9).fill(null),
+      players: [username],
+      active: true,
+    });
     socket.join(room);
     socket.emit("create-success", { room, players: [username] });
   });
@@ -73,31 +83,56 @@ io.on("connection", (socket) => {
   socket.on("play", ({ pos }) => {
     const player = getQuery(socket, "username");
     const room = getQuery(socket, "room");
+
     const roomData = rooms.get(room);
     const { board } = roomData;
 
+    // you cant play if you are lonely in the room
+    if (roomData.players.length === 1) {
+      console.log("first");
+      return socket.emit("play-error", { error: "Waiting for another player" });
+    }
+
     if (board[pos]) return;
-    console.log(rooms);
     board[pos] = player === roomData.players[0] ? "X" : "O";
 
     io.emit("update-board", { board });
 
     if (checkWinner(board, "X")) {
-      io.emit("winner", { winner: roomData.players[0] });
-    }
-    if (checkWinner(board, "O")) {
-      io.emit("winner", { winner: roomData.players[1] });
+      io.emit("game-over", { winner: roomData.players[0] });
+    } else if (checkWinner(board, "O")) {
+      io.emit("game-over", { winner: roomData.players[1] });
     }
   });
 
   socket.on("reset", () => {
     const room = getQuery(socket, "room");
     rooms.delete(room);
+    io.socketsLeave(room);
   });
 
   socket.on("init", () => {
     const room = getQuery(socket, "room");
     const roomData = rooms.get(room);
     io.emit("update-board", { board: roomData.board });
+  });
+
+  socket.on("leave-room", () => {
+    const room = getQuery(socket, "room");
+    const username = getQuery(socket, "username");
+    const roomData = rooms.get(room);
+    roomData.players = roomData.players.filter(
+      (player: string) => player !== username
+    );
+    socket.leave(room);
+
+    if (roomData.players.length === 0) {
+      roomData.active = false;
+      timeout = setTimeout(() => {
+        if (roomData.players.length === 0 && !roomData.active) {
+          rooms.delete(room);
+        }
+      }, 15000);
+    }
   });
 });

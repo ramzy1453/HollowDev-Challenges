@@ -5,6 +5,7 @@ import BoardItem from "./BoardItem";
 import { useSession } from "next-auth/react";
 import { useStore } from "@/libs/store";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type Props = {
   size: number;
@@ -30,11 +31,32 @@ export default function Board({ size }: Props) {
       setBoard(board);
     });
 
-    socket?.on("winner", ({ winner }) => {
-      alert(winner === data?.user?.name ? "You win" : "You lose");
-      socket.emit("reset");
-      router.push("/");
+    let timeout: NodeJS.Timeout;
+
+    socket?.on("game-over", ({ winner }) => {
+      if (winner === data?.user?.name) {
+        toast.success("You won!");
+      } else {
+        toast.error("You lost!");
+      }
+      timeout = setTimeout(() => {
+        socket.emit("reset");
+        router.push("/");
+      }, 1000);
     });
+
+    socket?.on("play-error", ({ error }) => {
+      console.log(error);
+      toast.error(error);
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      socket?.off("update-board");
+      socket?.off("game-over");
+      socket?.off("reset");
+      socket?.off("play-error");
+    };
   }, []);
 
   return (

@@ -12,9 +12,11 @@ export default async function Home({
   return (
     <div>
       <Navbar />
-      <p className="text-center text-3xl p-4">{room}</p>
-      <div className="border border-white h-screen justify-center items-center flex">
-        <Board size={9} />
+      <div className="space-y-6 my-8">
+        <p className="text-center text-3xl">{room}</p>
+        <div className="justify-center items-center flex">
+          <Board size={9} />
+        </div>
       </div>
     </div>
   );
