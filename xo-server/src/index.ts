@@ -31,7 +31,7 @@ export const io = new Server(server, {
 function getQuery(socket: Socket, q: string) {
   return socket.handshake.query[q] as string;
 }
-const rooms = new Map();
+const rooms = new Map<string, any>();
 let timeout: NodeJS.Timeout;
 io.on("connection", (socket) => {
   console.log("Connected user : ", socket.id);
@@ -77,6 +77,7 @@ io.on("connection", (socket) => {
       active: true,
     });
     socket.join(room);
+
     socket.emit("create-success", { room, players: [username] });
   });
 
@@ -89,19 +90,18 @@ io.on("connection", (socket) => {
 
     // you cant play if you are lonely in the room
     if (roomData.players.length === 1) {
-      console.log("first");
       return socket.emit("play-error", { error: "Waiting for another player" });
     }
 
     if (board[pos]) return;
     board[pos] = player === roomData.players[0] ? "X" : "O";
 
-    io.emit("update-board", { board });
+    io.to(room).emit("update-board", { board });
 
     if (checkWinner(board, "X")) {
-      io.emit("game-over", { winner: roomData.players[0] });
+      io.to(room).emit("game-over", { winner: roomData.players[0] });
     } else if (checkWinner(board, "O")) {
-      io.emit("game-over", { winner: roomData.players[1] });
+      io.to(room).emit("game-over", { winner: roomData.players[1] });
     }
   });
 
@@ -114,7 +114,7 @@ io.on("connection", (socket) => {
   socket.on("init", () => {
     const room = getQuery(socket, "room");
     const roomData = rooms.get(room);
-    io.emit("update-board", { board: roomData.board });
+    io.to(room).emit("update-board", { board: roomData.board });
   });
 
   socket.on("leave-room", () => {
@@ -125,7 +125,10 @@ io.on("connection", (socket) => {
       (player: string) => player !== username
     );
     socket.leave(room);
-
+    io.to(room).emit("leave-success", {
+      room,
+      players: roomData.players,
+    });
     if (roomData.players.length === 0) {
       roomData.active = false;
       timeout = setTimeout(() => {

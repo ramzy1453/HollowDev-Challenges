@@ -46,7 +46,7 @@ export default function Home() {
       <Navbar />
 
       <div
-        className="flex justify-center flex-col space-y-12 max-w-3xl mx-auto"
+        className="flex justify-center flex-col space-y-12 max-w-3xl mx-auto px-8"
         style={{
           height: "calc(100vh - 4rem)",
         }}
